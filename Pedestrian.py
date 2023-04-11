@@ -1,6 +1,8 @@
 import pygame
 
-from init import traffic_light, HEIGHT, GREEN, RED, crossing, YELLOW, WIDTH
+import init
+from constants import RED
+from init import traffic_light, HEIGHT, crossing, WIDTH
 
 
 class Pedestrian:
@@ -10,14 +12,26 @@ class Pedestrian:
         self.speed = speed
         self.color = (255, 0, 0)  # красный цвет
         self.size = 25  # размер треугольника
+        self.check_crossing = False
+        self.direction = "to_down"
 
-    def move(self, speed):
-        self.y += self.speed
+    def move(self, speed=None):
         self.speed = speed
-        print(self.y)
-        if self.y >= crossing.y - (self.size * 2):
-            if traffic_light.color == YELLOW or traffic_light.color == GREEN:
+        # НЕ красный
+        if traffic_light.color != RED:
+            # Чуть выше чем верхняя граница перехода
+            if self.y >= crossing.y - self.size and self.y <= crossing.y:
                 self.speed = 0
+                self.check_crossing = False
+            if self.y > crossing.y + crossing.height:
+                self.check_crossing = False
+        # Красный
+        elif traffic_light.color == RED:
+            if crossing.y <= self.y <= crossing.y + crossing.height:
+                self.check_crossing = True
+            if self.y > crossing.y + crossing.height:
+                self.check_crossing = False
+        self.y += self.speed
         if self.y > HEIGHT:
             self.y = 0
 

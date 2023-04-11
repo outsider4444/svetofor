@@ -1,8 +1,6 @@
 import pygame
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (128, 128, 128)
+from constants import WHITE, BLACK
 
 
 class Road:
