@@ -15,24 +15,25 @@ class TrafficLight:
         self.y = y
         self.radius = radius
         self.color = RED
-        self.next_change_time = pygame.time.get_ticks() + 5000  # Следующее изменение цвета через 5 секунд
-        self.last_color = None
+        self.next_change_time = pygame.time.get_ticks() + 3000  # Следующее изменение цвета через 5 секунд
+        self.new_color = None
 
     def change_color(self):
         if self.color == RED:
             self.color = YELLOW
-            self.next_change_time = pygame.time.get_ticks() + 2000  # Держим желтый 2 секунды
-            self.last_color = "red"
+            self.next_change_time = pygame.time.get_ticks() + 1200  # Держим желтый 2 секунды
         elif self.color == YELLOW:
-            if self.last_color == "red":
+            if self.new_color == "red":
                 self.color = GREEN
+                self.new_color = "green"
+                self.next_change_time = pygame.time.get_ticks() + 2000  # Держим зеленый на 5 секунд
             else:
                 self.color = RED
-            self.next_change_time = pygame.time.get_ticks() + 5000  # Держим цвет на 5 секунд
+                self.new_color = "red"
+                self.next_change_time = pygame.time.get_ticks() + 9000  # Держим красный на 5 секунд
         elif self.color == GREEN:
             self.color = YELLOW
-            self.next_change_time = pygame.time.get_ticks() + 2000  # Держим желтый 2 секунды
-            self.last_color = "green"
+            self.next_change_time = pygame.time.get_ticks() + 1200  # Держим желтый 2 секунды
 
     def update(self):
         current_time = pygame.time.get_ticks()

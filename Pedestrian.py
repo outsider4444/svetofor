@@ -14,13 +14,14 @@ class Pedestrian:
         self.size = 25  # размер треугольника
         self.check_crossing = False
         self.direction = "to_down"
+        self.check_car = False
 
     def move(self, speed=None):
         self.speed = speed
         # НЕ красный
         if traffic_light.color != RED:
             # Чуть выше чем верхняя граница перехода
-            if self.y >= crossing.y - self.size and self.y <= crossing.y:
+            if crossing.y - self.size <= self.y <= crossing.y:
                 self.speed = 0
                 self.check_crossing = False
             if self.y > crossing.y + crossing.height:
@@ -31,9 +32,13 @@ class Pedestrian:
                 self.check_crossing = True
             if self.y > crossing.y + crossing.height:
                 self.check_crossing = False
+        # Проверка на машину на пешеходке
+        if self.check_car == True:
+            self.speed = 0
+
         self.y += self.speed
-        if self.y > HEIGHT:
-            self.y = 0
+        if self.y > 600:
+            self.y = 50
 
     def draw(self, window):
         x1, y1 = self.x, self.y + self.size

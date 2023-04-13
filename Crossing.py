@@ -21,6 +21,12 @@ class PedestrianCrossing:
 
     def draw(self, screen):
         # Отображаем квадрат на экране
+        font = pygame.font.Font(None, 20)
+        texet_e = font.render(f"({self.x + self.width}, {self.y})", True, (255, 255, 255))
+        text_s = font.render(f"({self.x}, {self.y})", True, (255, 255, 255))
+        # Показ координат
+        screen.blit(texet_e, ((self.x - texet_e.get_width() // 2) + self.width, (self.y - texet_e.get_height() // 2) - 15))
+        screen.blit(text_s, ((self.x - text_s.get_width() // 2), (self.y - text_s.get_height() // 2) - 15))
         screen.blit(self.surface, (self.x, self.y))
 
     def return_x(self):
