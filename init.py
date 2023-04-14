@@ -37,4 +37,5 @@ for i in range(len(cars_to_left)):
 cars = cars_to_right + cars_to_left
 
 
-people = []
+# Создание пешехода
+pedestrians = []

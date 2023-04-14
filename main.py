@@ -3,7 +3,7 @@ import pygame
 from Pedestrian import Pedestrian
 from Car import Car, spawn_car, delete_car
 from constants import WIDTH, HEIGHT
-from init import traffic_light, crossing, screen, cars
+from init import traffic_light, crossing, screen, cars, pedestrians
 from Road import Road
 
 pygame.init()
@@ -22,12 +22,11 @@ delay = 500  # 1 секунды
 # время, когда нужно создать следующую машину
 next_circle_time = pygame.time.get_ticks() + delay
 
+# Машины
 car = Car(x=WIDTH-1, y=(HEIGHT // 2) - 100, radius=25, speed=-4, id=0, direction="to_left")
 cars.append(car)
 
-# Создание пешехода
-pedestrians = []
-
+# Пешеходы
 pedestrian1 = Pedestrian(WIDTH / 2 + 85, 50, speed=1, direction="to_down")
 pedestrian2 = Pedestrian(WIDTH / 2 + 115, 650, speed=-1, direction="to_up")
 pedestrians.append(

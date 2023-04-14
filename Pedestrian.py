@@ -40,7 +40,7 @@ class Pedestrian:
         elif self.direction == "to_up":
             if traffic_light.color != RED:
                 # Чуть выше чем верхняя граница перехода
-                if (crossing.y + crossing.height)+3 >= self.y >= crossing.y + crossing.height:
+                if (crossing.y + crossing.height) + 3 >= self.y >= crossing.y + crossing.height:
                     print("Я остановився")
                     self.speed = 0
                     self.check_crossing = False
@@ -58,6 +58,7 @@ class Pedestrian:
         if self.check_car == True:
             self.speed = 0
         self.y += self.speed
+
     def draw(self, window):
         x1, y1 = self.x, self.y + self.size
         x2, y2 = self.x + self.size, self.y + self.size
