@@ -17,19 +17,25 @@ pygame.display.set_caption("Светофор")
 road = Road(x=0, y=(HEIGHT - 300) // 2, width=WIDTH, height=250, strip_width=10, strip_count=20)
 
 # Создание машину
-delay = 1500  # 1 секунды
+delay = 500  # 1 секунды
 
-# время, когда нужно создать следующий круг
+# время, когда нужно создать следующую машину
 next_circle_time = pygame.time.get_ticks() + delay
 
-# cars.append(Car(x=1, y=(HEIGHT // 2) + 55, radius=25, speed=0, WIDTH=WIDTH, id=1))
-# cars.append(Car(x=WIDTH, y=(HEIGHT // 2) - 100, radius=25, speed=0, WIDTH=WIDTH, id=3, direction="to_left"))
-
-car = Car(x=1, y=(HEIGHT // 2) + 55, radius=25, speed=0, WIDTH=WIDTH, id=0)
+car = Car(x=WIDTH-1, y=(HEIGHT // 2) - 100, radius=25, speed=-4, id=0, direction="to_left")
 cars.append(car)
 
 # Создание пешехода
-pedestrian = Pedestrian(WIDTH / 2 + 85, 50, speed=0)
+pedestrians = []
+
+pedestrian1 = Pedestrian(WIDTH / 2 + 85, 50, speed=1, direction="to_down")
+pedestrian2 = Pedestrian(WIDTH / 2 + 115, 650, speed=-1, direction="to_up")
+pedestrians.append(
+    pedestrian1
+)
+pedestrians.append(
+    pedestrian2
+)
 
 # Создаем объект для отслеживания времени
 clock = pygame.time.Clock()
@@ -57,29 +63,56 @@ while running:
             next_circle_time = current_time + delay
         delete_car(cars)
 
-        # движение человека
-        pedestrian.move(0.6)
+        # Проверка чтобы люди не шли если машина на пешеходке
+        for pedestrian in pedestrians:
+            if pedestrian.direction == "to_down":
+                # Машина на пешеходке
+                if crossing.y - pedestrian.size <= pedestrian.y <= crossing.y:
+                    for car in cars:
+                        if (car.direction == "to_right" and crossing.x + crossing.width >= car.x >= crossing.x)\
+                                or (car.direction == "to_left" and crossing.x <= car.x <= crossing.x + crossing.width) :
+                            pedestrian.check_car = True
+                            break
+                        else:
+                            pedestrian.check_car = False
 
-        # если человек на светофоре
-        if pedestrian.check_crossing:
-            # если машина возле пешеходки
-            for car in cars:
-                if crossing.x - car.radius <= car.x <= crossing.x + car.radius:
-                    car.check_man = True
-                else:
-                    car.check_man = False
-        else:
-            for car in cars:
-                car.check_man = False
+        # движение человека
+        for pedestrian in pedestrians:
+            if pedestrian.direction == "to_up":
+                speed = -1
+            else:
+                speed = 1
+            pedestrian.move(speed)
+
+        for pedestrian in pedestrians:
+            # если человек на светофоре
+            if pedestrian.check_crossing:
+                # если машина возле пешеходки
+                for car in cars:
+                    print(car.id, car.direction, car.check_man)
+                    if car.direction == "to_right":
+                        if crossing.x - car.radius <= car.x <= crossing.x + car.radius:
+                            car.check_man = True
+                        else:
+                            car.check_man = False
+                    elif car.direction == "to_left":
+                        if crossing.x + crossing.width + car.radius >= car.x >= crossing.x - car.radius:
+                            car.check_man = True
+                        else:
+                            car.check_man = False
 
         # Отрисовываем машину на экране
         for car in cars:
-            if car.x > 0:
+            if 0 < car.x < WIDTH + 5:
                 car.draw(screen)
 
         # Движение машины
         for car in cars:
-            car.move(4)
+            if car.direction == "to_left":
+                speed = -4
+            else:
+                speed = 4
+            car.move(speed=speed)
         # отрисовка перехода
         crossing.draw(screen)
 
@@ -87,8 +120,9 @@ while running:
         traffic_light.update()
         traffic_light.draw(screen)
 
-        # Отрисовка пешехода
-        pedestrian.draw(screen)
+        for pedestrian in pedestrians:
+            # Отрисовка пешехода
+            pedestrian.draw(screen)
 
         pygame.display.update()
 

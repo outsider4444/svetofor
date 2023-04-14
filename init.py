@@ -12,7 +12,7 @@ from TrafficLight import TrafficLight
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # рисуем светофор
-traffic_light = TrafficLight(WIDTH // 2 + 150, (HEIGHT // 2) + 150, 25)
+traffic_light = TrafficLight(WIDTH // 2 + 200, (HEIGHT // 2) + 150, 25)
 
 # рисуем границы для перехода
 crossing = PedestrianCrossing(WIDTH / 2 + 50, HEIGHT / 2 - 50)
