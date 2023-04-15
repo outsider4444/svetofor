@@ -3,7 +3,7 @@ import random
 import pygame
 
 from constants import RED, BLACK, GREEN, HEIGHT, WIDTH, YELLOW
-from init import traffic_light, crossing, screen, cars
+from init import traffic_light, crossings, screen, cars
 
 
 class Car:
@@ -11,7 +11,9 @@ class Car:
         self.x = x
         self.y = y
         self.radius = radius
-        self.speed = speed
+        self.speed = 0  # начальная скорость по оси X
+        self.max_speed_x = 10  # максимальная скорость по оси X
+        self.acceleration = 1  # константа ускорения
         self.direction = direction
         self.check_man = False
         self.check_car = False
@@ -44,25 +46,39 @@ class Car:
         if self.check_man or self.check_car:
             self.speed = 0
         else:
-            if self.direction == "to_right":
-                # Машина рядом с пешеходкой
-                if crossing.x - (self.radius + 3) <= self.x <= crossing.x + self.radius:
-                    if traffic_light.color == RED or (traffic_light.color == YELLOW and traffic_light.new_color == "red"):
-                        self.speed = 0
-                # Проезд на желтый
-                if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
-                    self.speed = speed
-            if self.direction == "to_left":
-                # Машина рядом с пешеходкой
-                if crossing.x + crossing.width + (self.radius + 3) >= self.x >= (crossing.x + crossing.width) - self.radius:
-                    if traffic_light.color == RED or (traffic_light.color == YELLOW and traffic_light.new_color == "red"):
-                        self.speed = 0
-                # Проезд на желтый
-                if not self.check_man:
+            for crossing in crossings:
+                if self.direction == "to_right":
+                    # Машина рядом с пешеходкой
+                    # if crossing.id == 0:
+                    if crossing.x - (self.radius + 3) <= self.x <= crossing.x + self.radius:
+                        if traffic_light.color == RED or (
+                                traffic_light.color == YELLOW and traffic_light.new_color == "red"):
+                            self.speed = 0
+                    # Проезд на желтый
+                    if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
+                        self.speed = speed
+                    # if crossing.id == 1:
+                    # if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
+                    #     self.speed = speed
+                if self.direction == "to_left":
+                    # if crossing.id == 1:
+                    # Машина рядом с пешеходкой
+                    if crossing.x + crossing.width + (self.radius + 3) >= self.x >= (
+                            crossing.x + crossing.width) - self.radius:
+                        if traffic_light.color == RED or (
+                                traffic_light.color == YELLOW and traffic_light.new_color == "red"):
+                            self.speed = 0
+                    # Проезд на желтый
                     if self.x - self.radius < crossing.x + crossing.width and self.x >= crossing.x:
                         self.speed = speed
+                # if crossing.id == 0:
+                #     if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width and self.check_man == False:
+                #         self.speed = speed
         self.x += self.speed
 
+    # def accelerate(self,):
+    #     if self.speed < self.max_speed_x:
+    #         self.speed += self.acceleration
 
     def draw(self, screen):
         pygame.draw.circle(screen, BLACK, (int(self.x), int(self.y)), self.radius)
@@ -78,11 +94,12 @@ class Car:
 
 id = 1
 direction = "to_right"
+
+
 def spawn_car(cars):
     global id
     global direction
-
-    if len(cars) < 20:
+    if len(cars) < 15:
         if direction == "to_left":
             speed = -4
             y = (HEIGHT // 2) - 100
@@ -93,16 +110,18 @@ def spawn_car(cars):
             direction = "to_right"
         if direction == "to_right":
             speed = 4
-            y = (HEIGHT // 2) + 55
+            y = (HEIGHT // 2) + 5
             x = -50
             car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
             cars.append(car)
             id += 1
             direction = "to_left"
 
+
 def delete_car(cars):
     global id
     for i in range(len(cars)):
-        if (cars[i].direction == "to_right" and cars[i].x >= WIDTH) or (cars[i].direction == "to_left" and cars[i].x <= 0):
+        if (cars[i].direction == "to_right" and cars[i].x >= WIDTH) or (
+                cars[i].direction == "to_left" and cars[i].x <= 0):
             cars.pop(i)
             break

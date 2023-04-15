@@ -16,7 +16,7 @@ class TrafficLight:
         self.radius = radius
         self.color = RED
         self.next_change_time = pygame.time.get_ticks() + 3000  # Следующее изменение цвета через 3 секунд
-        self.new_color = None
+        self.new_color = "red"
 
     def change_color(self):
         if self.color == RED:
@@ -26,7 +26,7 @@ class TrafficLight:
             if self.new_color == "red":
                 self.color = GREEN
                 self.new_color = "green"
-                self.next_change_time = pygame.time.get_ticks() + 1000  # Держим зеленый на 2 секунд
+                self.next_change_time = pygame.time.get_ticks() + 3000  # Держим зеленый на 2 секунд
             else:
                 self.color = RED
                 self.new_color = "red"

@@ -2,7 +2,7 @@ import pygame
 
 import init
 from constants import RED
-from init import traffic_light, HEIGHT, crossing, WIDTH
+from init import traffic_light, HEIGHT, crossings, WIDTH
 
 
 class Pedestrian:
@@ -14,50 +14,52 @@ class Pedestrian:
         self.size = 25  # размер треугольника
         self.check_crossing = False
         self.direction = direction
+        self.ready = False
         self.check_car = False
 
     def move(self, speed=None):
         self.speed = speed
         # сверху вниз
-        if self.direction == "to_down":
-            # НЕ красный
-            if traffic_light.color != RED:
-                # Чуть выше чем верхняя граница перехода
-                if (crossing.y - self.size) - 3 <= self.y <= crossing.y:
-                    self.speed = 0
-                    self.check_crossing = False
-                if self.y > crossing.y + crossing.height:
-                    self.check_crossing = False
-            # Красный
-            elif traffic_light.color == RED:
-                if crossing.y <= self.y <= crossing.y + crossing.height:
-                    self.check_crossing = True
-                if self.y > crossing.y + crossing.height:
-                    self.check_crossing = False
-            if self.y > 600:
-                self.y = 150
-        # снизу вверх
-        elif self.direction == "to_up":
-            if traffic_light.color != RED:
-                # Чуть выше чем верхняя граница перехода
-                if (crossing.y + crossing.height) + 3 >= self.y >= crossing.y + crossing.height:
-                    print("Я остановився")
-                    self.speed = 0
-                    self.check_crossing = False
-                if self.y < crossing.y:
-                    self.check_crossing = False
-            # Красный
-            elif traffic_light.color == RED:
-                if crossing.y + crossing.height >= self.y >= crossing.y:
-                    self.check_crossing = True
-                if self.y > crossing.y:
-                    self.check_crossing = False
-            if self.y < 100:
-                self.y = 650
-        # Проверка на машину на пешеходке
-        if self.check_car == True:
-            self.speed = 0
-        self.y += self.speed
+        for crossing in crossings:
+            if self.direction == "to_down":
+                # НЕ красный
+                if traffic_light.color != RED:
+                    # Чуть выше чем верхняя граница перехода
+                    if (crossing.y - self.size) - 3 <= self.y <= crossing.y:
+                        self.speed = 0
+                        self.check_crossing = False
+                    if self.y > crossing.y + crossing.height:
+                        self.check_crossing = False
+                # Красный
+                elif traffic_light.color == RED:
+                    # Чуть ниже чем нижняя граница перехода
+                    if crossing.y <= self.y <= crossing.y + crossing.height:
+                        self.check_crossing = True
+                    if self.y > crossing.y + crossing.height:
+                        self.check_crossing = False
+                if self.y > 600:
+                    self.y = 50
+            # снизу вверх
+            elif self.direction == "to_up":
+                if traffic_light.color != RED:
+                    # Чуть выше чем верхняя граница перехода
+                    if (crossing.y + crossing.height) + 3 >= self.y >= crossing.y + crossing.height:
+                        self.speed = 0
+                        self.check_crossing = False
+                    if self.y < crossing.y:
+                        self.check_crossing = False
+                # Красный
+                elif traffic_light.color == RED:
+                    if crossing.y + crossing.height >= self.y >= crossing.y:
+                        self.check_crossing = True
+                    if self.y < crossing.y:
+                        self.check_crossing = False
+                if self.y < 100:
+                    self.y = 600
+            # Проверка на машину на пешеходке
+            if self.check_car == True:
+                self.speed = 0
+            self.y += self.speed
 
     def draw(self, window):
         x1, y1 = self.x, self.y + self.size

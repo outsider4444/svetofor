@@ -14,7 +14,6 @@ class Road:
         self.segment_width = (self.width - (self.strip_count + 1) * self.strip_width) // self.strip_count
 
     def draw(self, surface):
-        surface.fill(BLACK)
         pygame.draw.rect(surface, WHITE, (self.x, self.y, self.width, self.height))
         for i in range(self.strip_count):
             strip_x = self.x + (i + 1) * self.strip_width + i * self.segment_width
