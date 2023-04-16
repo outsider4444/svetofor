@@ -1,10 +1,10 @@
 import pygame
 
 from Pedestrian import Pedestrian
-from Car import Car, spawn_car, delete_car
+from Car import Car, delete_car, spawn_car_to_right, spawn_car_to_left
 from constants import WIDTH, HEIGHT, BLACK, GREEN, RED
 from init import traffic_light, screen, cars, pedestrians, crossings
-from Road import Road
+from man_on_crossing import man_on_crossing
 
 pygame.init()
 # Создание флага для проверки состояния паузы
@@ -14,29 +14,25 @@ paused = False
 pygame.display.set_caption("Светофор")
 
 # Создаем объект дороги
-road = Road(x=0, y=(HEIGHT - 300) // 2, width=WIDTH, height=200, strip_width=10, strip_count=20)
-# road_v = Road(x=WIDTH // 2, y=0, width=250, height=HEIGHT, strip_width=10, strip_count=20)
+# Загрузка изображения для заполнения фона
+background_image = pygame.image.load("images/Background.png")
 
 # Создание машину
-delay = 700  # 1 секунды
+delay = 1000  # 1 секунды
 
 # время, когда нужно создать следующую машину
 next_circle_time = pygame.time.get_ticks() + delay
 
-# Машины
-# todo Убрать случайное появление машин. Нужно 12 вправо и 6 влево
-car = Car(x=WIDTH - 1, y=(HEIGHT // 2) - 100, radius=25, speed=-4, id=0, direction="to_left")
-cars.append(car)
-
 # Пешеходы
-pedestrian1 = Pedestrian(WIDTH / 2 - 50, 0, speed=1, direction="to_down")
-# pedestrian2 = Pedestrian(WIDTH / 2 + 315, 650, speed=-1, direction="to_up")
+# pedestrian1 = Pedestrian((WIDTH / 2) - 200, 0, speed=1, direction="to_down")
+pedestrian1 = Pedestrian((WIDTH / 2) - 200, 0, speed=1, direction="to_down")
+pedestrian2 = Pedestrian(WIDTH / 2 + 175, 650, speed=-1, direction="to_up")
 pedestrians.append(
     pedestrian1
 )
-# pedestrians.append(
-#     pedestrian2
-# )
+pedestrians.append(
+    pedestrian2
+)
 
 # Создаем объект для отслеживания времени
 clock = pygame.time.Clock()
@@ -55,21 +51,26 @@ while running:
                 paused = not paused  # Изменение значения флага при нажатии на пробел
     if not paused:
         # отрисовка дороги
-        screen.fill(BLACK)
-        road.draw(screen)
-        # road_v.draw(screen)
+        screen.blit(background_image, (0, 0))
+        pygame.draw.circle(screen, RED, (WIDTH-5, (HEIGHT // 2)-80), 1)
+        pygame.draw.circle(screen, RED, (8, (HEIGHT // 2)+50), 1)
 
-        # Спавн и удаление машин
+        # todo Спавн и удаление машин
         current_time = pygame.time.get_ticks()
+        check_car_to_spawn_right = screen.get_at((8, (HEIGHT // 2) + 50))
+        check_car_to_spawn_left = screen.get_at((WIDTH-5, (HEIGHT // 2) - 80))
         if current_time >= next_circle_time:
-            spawn_car(cars)
+            if check_car_to_spawn_right != (0, 0, 0):
+                spawn_car_to_right()
+            if check_car_to_spawn_left != (0, 0, 0):
+                spawn_car_to_left()
             next_circle_time = current_time + delay
-        delete_car(cars)
+        delete_car()
 
         # todo Проверка чтобы люди не шли если машина на пешеходке
 
-
-        # todo если человек на светофоре
+        # Человек переходит дорогу - машины пропускают
+        man_on_crossing(cars, pedestrians, crossings)
 
         # Движение машины
         for car in cars:
@@ -77,9 +78,9 @@ while running:
             if -1 < car.x < WIDTH + 5:
                 car.draw(screen)
             if car.direction == "to_left":
-                speed = -4
+                speed = -3
             else:
-                speed = 4
+                speed = 3
             # car.accelerate()  # ускоряем круг
             car.move(speed=speed)
 
@@ -96,10 +97,9 @@ while running:
             if pedestrian.direction == "to_up":
                 speed = -1
             else:
-                speed = 0.5
+                speed = 1
             pedestrian.move(speed)
             pedestrian.draw(screen)
-
         pygame.display.update()
 
 # Выходим из игры

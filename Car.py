@@ -3,7 +3,7 @@ import random
 import pygame
 
 from constants import RED, BLACK, GREEN, HEIGHT, WIDTH, YELLOW
-from init import traffic_light, crossings, screen, cars
+from init import traffic_light, crossings, screen, cars, cars_to_right, cars_to_left
 
 
 class Car:
@@ -49,11 +49,14 @@ class Car:
             for crossing in crossings:
                 if self.direction == "to_right":
                     # Машина рядом с пешеходкой
-                    # if crossing.id == 0:
-                    if crossing.x - (self.radius + 3) <= self.x <= crossing.x + self.radius:
-                        if traffic_light.color == RED or (
-                                traffic_light.color == YELLOW and traffic_light.new_color == "red"):
-                            self.speed = 0
+                    if crossing.id == 0:
+                        if crossing.x - (self.radius + 3) <= self.x <= crossing.x + self.radius:
+                            if traffic_light.color == RED or (
+                                    traffic_light.color == YELLOW and traffic_light.new_color == "red"):
+                                self.speed = 0
+                    if crossing.id == 1:
+                        if self.x > crossings[0].x + crossings[0].width and self.x <= crossing.x:
+                            self.speed = speed
                     # Проезд на желтый
                     if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
                         self.speed = speed
@@ -61,19 +64,19 @@ class Car:
                     # if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
                     #     self.speed = speed
                 if self.direction == "to_left":
-                    # if crossing.id == 1:
-                    # Машина рядом с пешеходкой
-                    if crossing.x + crossing.width + (self.radius + 3) >= self.x >= (
-                            crossing.x + crossing.width) - self.radius:
-                        if traffic_light.color == RED or (
-                                traffic_light.color == YELLOW and traffic_light.new_color == "red"):
-                            self.speed = 0
+                    if crossing.id == 1:
+                        # Машина рядом с пешеходкой
+                        if crossing.x + crossing.width + (self.radius + 3) >= self.x >= (
+                                crossing.x + crossing.width) - self.radius:
+                            if traffic_light.color == RED or (
+                                    traffic_light.color == YELLOW and traffic_light.new_color == "red"):
+                                self.speed = 0
+                    if crossing.id == 0:
+                        if self.x > crossings[1].x + crossings[1].width and self.x <= crossing.x:
+                            self.speed = speed
                     # Проезд на желтый
                     if self.x - self.radius < crossing.x + crossing.width and self.x >= crossing.x:
                         self.speed = speed
-                # if crossing.id == 0:
-                #     if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width and self.check_man == False:
-                #         self.speed = speed
         self.x += self.speed
 
     # def accelerate(self,):
@@ -88,7 +91,7 @@ class Car:
         text_coor = font.render(f"{self.x + self.radius}, {self.y}", True, (0, 0, 0))
         # Вывод id машинки
         text = font.render(f"{self.id}", True, (255, 255, 255))
-        screen.blit(text, (self.x - text.get_width() // 2, self.y - text.get_height() // 2))
+        # screen.blit(text, (self.x - text.get_width() // 2, self.y - text.get_height() // 2))
         # screen.blit(text_coor, (self.x - text.get_width() // 2, (self.y - text.get_height() // 2) - 35))
 
 
@@ -96,32 +99,47 @@ id = 1
 direction = "to_right"
 
 
-def spawn_car(cars):
+# Спавн машинок, едущих направо
+def spawn_car_to_right():
     global id
-    global direction
-    if len(cars) < 15:
-        if direction == "to_left":
-            speed = -4
-            y = (HEIGHT // 2) - 100
-            x = WIDTH
-            car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
-            cars.append(car)
-            id += 1
-            direction = "to_right"
-        if direction == "to_right":
-            speed = 4
-            y = (HEIGHT // 2) + 5
-            x = -50
-            car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
-            cars.append(car)
-            id += 1
-            direction = "to_left"
+    global cars_to_right
+    if len(cars_to_right) < 13:
+        direction = "to_right"
+        speed = 4
+        y = (HEIGHT // 2) + 50
+        x = -50
+        car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
+        cars_to_right.append(car)
+        cars.append(car)
+        id += 1
+
+# Спавн машинок, едущих налево
+def spawn_car_to_left():
+    global id
+    global cars_to_left
+    if len(cars_to_left) < 8:
+        direction = "to_left"
+        speed = -4
+        y = (HEIGHT // 2) - 80
+        x = WIDTH
+        car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
+        cars_to_left.append(car)
+        cars.append(car)
+        id += 1
 
 
-def delete_car(cars):
-    global id
-    for i in range(len(cars)):
-        if (cars[i].direction == "to_right" and cars[i].x >= WIDTH) or (
-                cars[i].direction == "to_left" and cars[i].x <= 0):
+# Удаление машинок
+def delete_car():
+    global cars_to_right
+    global cars_to_left
+    global cars
+    for i in range(len(cars_to_right)):
+        if cars_to_right[i].x >= WIDTH:
+            cars_to_right.pop(i)
             cars.pop(i)
+            break
+    for j in range(len(cars_to_left)):
+        if cars[j].x <= 0:
+            cars_to_left.pop(j)
+            cars.pop(j)
             break

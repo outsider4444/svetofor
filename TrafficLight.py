@@ -18,7 +18,7 @@ class TrafficLight:
         self.next_change_time = pygame.time.get_ticks() + 3000  # Следующее изменение цвета через 3 секунд
         self.new_color = "red"
 
-    def change_color(self):
+    def change_color(self, delay=None):
         if self.color == RED:
             self.color = YELLOW
             self.next_change_time = pygame.time.get_ticks() + 1200  # Держим желтый 1.2 секунды
