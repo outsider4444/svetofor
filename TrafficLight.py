@@ -10,15 +10,20 @@ GREEN = (0, 255, 0)
 
 # Класс светофора
 class TrafficLight:
-    def __init__(self, x, y, radius):
+    def __init__(self, x, y, radius, red_time=5, yellow_time=2, green_time=5):
         self.x = x
         self.y = y
         self.radius = radius
+
+        self.red_time = red_time
+        self.yellow_time = yellow_time
+        self.green_time = green_time
+
         self.color = RED
         self.next_change_time = pygame.time.get_ticks() + 3000  # Следующее изменение цвета через 3 секунд
         self.new_color = "red"
 
-    def change_color(self, delay=None):
+    def change_color(self,next_color=None, duration=None):
         if self.color == RED:
             self.color = YELLOW
             self.next_change_time = pygame.time.get_ticks() + 1200  # Держим желтый 1.2 секунды

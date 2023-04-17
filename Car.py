@@ -5,9 +5,12 @@ import pygame
 from constants import RED, BLACK, GREEN, HEIGHT, WIDTH, YELLOW
 from init import traffic_light, crossings, screen, cars, cars_to_right, cars_to_left
 
+all_sprites = pygame.sprite.Group()
 
-class Car:
+
+class Car(pygame.sprite.Sprite):
     def __init__(self, x, y, radius, speed, id, direction="to_right"):
+        super().__init__()
         self.x = x
         self.y = y
         self.radius = radius
@@ -18,28 +21,28 @@ class Car:
         self.check_man = False
         self.check_car = False
         self.id = id
-        self.spawn_time = pygame.time.get_ticks()
 
     def car_checker(self):
         if self.direction == "to_left":
             if self.x + self.radius < WIDTH:
                 if self.x - (self.radius + 10) > 0:
                     color = screen.get_at((self.x - (self.radius + 10), self.y))
-                    if color == (0, 0, 0):
+                    if color == BLACK:
                         self.check_car = True
                     else:
                         self.check_car = False
         elif self.direction == "to_right":
             # Проверка на наличие машины рядом
-            if self.x - self.radius > 0:
-                if self.x + (self.radius + 10) < WIDTH:
-                    color = screen.get_at((self.x + (self.radius + 10), self.y))
-                    if color == (0, 0, 0):
-                        self.check_car = True
-                    else:
-                        self.check_car = False
+            if 0 < self.x + (self.radius + 10) < WIDTH:
+                color = screen.get_at((self.x + (self.radius + 10), self.y))
+                if color == BLACK:
+                    self.check_car = True
+                else:
+                    self.check_car = False
 
-    def move(self, speed):
+    def move(self, speed, cars):
+        global all_sprites
+
         self.speed = speed
         self.car_checker()
         # На пешеходке человек или рядом машинка
@@ -55,14 +58,11 @@ class Car:
                                     traffic_light.color == YELLOW and traffic_light.new_color == "red"):
                                 self.speed = 0
                     if crossing.id == 1:
-                        if self.x > crossings[0].x + crossings[0].width and self.x <= crossing.x:
+                        if crossings[0].x + crossings[0].width < self.x <= crossing.x:
                             self.speed = speed
                     # Проезд на желтый
                     if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
                         self.speed = speed
-                    # if crossing.id == 1:
-                    # if self.x + self.radius > crossing.x and self.x <= crossing.x + crossing.width:
-                    #     self.speed = speed
                 if self.direction == "to_left":
                     if crossing.id == 1:
                         # Машина рядом с пешеходкой
@@ -72,74 +72,59 @@ class Car:
                                     traffic_light.color == YELLOW and traffic_light.new_color == "red"):
                                 self.speed = 0
                     if crossing.id == 0:
-                        if self.x > crossings[1].x + crossings[1].width and self.x <= crossing.x:
+                        if crossings[1].x + crossings[1].width < self.x <= crossing.x:
                             self.speed = speed
                     # Проезд на желтый
                     if self.x - self.radius < crossing.x + crossing.width and self.x >= crossing.x:
                         self.speed = speed
+
+        self.remove_if_off_screen(cars)
         self.x += self.speed
 
-    # def accelerate(self,):
-    #     if self.speed < self.max_speed_x:
-    #         self.speed += self.acceleration
+    def remove_if_off_screen(self, cars):
+        if (self.direction == "to_left" and self.x + self.radius < 0) or (
+                self.direction == "to_right" and self.x - self.radius > WIDTH):
+            for i in range(len(cars)):
+                if self.id == cars[i].id:
+                    cars.pop(i)
+                    break
+            self.kill()
+            self.remove(all_sprites)
+            del self
 
     def draw(self, screen):
+        # pygame.draw.circle(screen, RED, (int(self.x) + self.radius + 10, int(self.y)), 1)
         pygame.draw.circle(screen, BLACK, (int(self.x), int(self.y)), self.radius)
-        # Показ координат
         font = pygame.font.Font(None, 20)
-        # Вывод координат в машинке
-        text_coor = font.render(f"{self.x + self.radius}, {self.y}", True, (0, 0, 0))
-        # Вывод id машинки
-        text = font.render(f"{self.id}", True, (255, 255, 255))
-        # screen.blit(text, (self.x - text.get_width() // 2, self.y - text.get_height() // 2))
+        text_coor = font.render(f"{self.x + self.radius}, {self.y}", True, (0, 0, 0))  # Вывод координат в машинке
+        text = font.render(f"{self.id}", True, (255, 255, 255))  # Вывод id машинки
+        screen.blit(text, (self.x - text.get_width() // 2, self.y - text.get_height() // 2))
         # screen.blit(text_coor, (self.x - text.get_width() // 2, (self.y - text.get_height() // 2) - 35))
 
 
-id = 1
+id = 0
 direction = "to_right"
 
 
-# Спавн машинок, едущих направо
-def spawn_car_to_right():
+def spawn_car(cars):
     global id
-    global cars_to_right
-    if len(cars_to_right) < 13:
-        direction = "to_right"
-        speed = 4
-        y = (HEIGHT // 2) + 50
-        x = -50
-        car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
-        cars_to_right.append(car)
-        cars.append(car)
-        id += 1
-
-# Спавн машинок, едущих налево
-def spawn_car_to_left():
-    global id
-    global cars_to_left
-    if len(cars_to_left) < 8:
-        direction = "to_left"
-        speed = -4
-        y = (HEIGHT // 2) - 80
-        x = WIDTH
-        car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
-        cars_to_left.append(car)
-        cars.append(car)
-        id += 1
-
-
-# Удаление машинок
-def delete_car():
-    global cars_to_right
-    global cars_to_left
-    global cars
-    for i in range(len(cars_to_right)):
-        if cars_to_right[i].x >= WIDTH:
-            cars_to_right.pop(i)
-            cars.pop(i)
-            break
-    for j in range(len(cars_to_left)):
-        if cars[j].x <= 0:
-            cars_to_left.pop(j)
-            cars.pop(j)
-            break
+    global direction, all_sprites
+    if len(cars) < 15:
+        if direction == "to_left":
+            speed = -4
+            y = (HEIGHT // 2) - 75
+            x = WIDTH
+            car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
+            cars.append(car)
+            id += 1
+            direction = "to_right"
+            all_sprites.add(car)
+        if direction == "to_right":
+            speed = 4
+            y = (HEIGHT // 2) + 50
+            x = -50
+            car = Car(x=x, y=y, radius=25, speed=speed, id=id, direction=direction)
+            cars.append(car)
+            id += 1
+            direction = "to_left"
+            all_sprites.add(car)
