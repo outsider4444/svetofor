@@ -1,5 +1,6 @@
 import pygame
 
+from SmartTrafficLight import SmartTrafficLight
 from Crossing import PedestrianCrossing
 from constants import WIDTH, HEIGHT
 from TrafficLight import TrafficLight
@@ -7,8 +8,11 @@ from TrafficLight import TrafficLight
 # Создаем окно
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# рисуем светофор
-traffic_light = TrafficLight(WIDTH // 2 + 100, (HEIGHT // 2) + 150, 25)
+# Светофор
+# traffic_light = TrafficLight(WIDTH // 2 + 50, (HEIGHT // 2) + 150, 25)
+# Умный светофор
+smart_traffic_light = SmartTrafficLight((WIDTH // 2) + 50, (HEIGHT // 2) + 150, 3, 3)
+traffic_light = smart_traffic_light
 
 # рисуем границы для перехода
 crossing1 = PedestrianCrossing((WIDTH / 2) - 220, (HEIGHT / 2)-20, 100, 240,2, 0)

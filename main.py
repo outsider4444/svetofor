@@ -1,12 +1,12 @@
 import pygame
 
+import SmartTrafficLight
 from Pedestrian import Pedestrian
 from Car import spawn_car, Car, all_sprites
-from constants import WIDTH, HEIGHT, BLACK, GREEN, RED
-from init import traffic_light, screen, pedestrians, crossings, cars
+from constants import WIDTH, HEIGHT, BLACK, GREEN, RED, YELLOW
+from init import screen, pedestrians, crossings, cars, smart_traffic_light, traffic_light
 from man_on_crossing import man_on_crossing
 
-from TrafficTest import TrafficLight
 
 pygame.init()
 # Создание флага для проверки состояния паузы
@@ -17,23 +17,27 @@ pygame.display.set_caption("Светофор")
 
 # Создаем объект дороги
 # Загрузка изображения для заполнения фона
-background_image = pygame.image.load("images/Background.png")
+background_image = pygame.image.load("images/bg.png")
 
 # Создание машину
-delay = 1000  # 1 секунды
+delay = 1500  # 1.5 секунды
 
 # время, когда нужно создать следующую машину
 next_circle_time = pygame.time.get_ticks() + delay
 
 # Пешеходы
 pedestrian1 = Pedestrian((WIDTH / 2) - 200, 0, speed=1, direction="to_down")
-pedestrian2 = Pedestrian(WIDTH / 2 + 175, 650, speed=-1, direction="to_up")
+pedestrian2 = Pedestrian(WIDTH / 2 + 175, 700, speed=-1, direction="to_up")
+pedestrian3 = Pedestrian(WIDTH / 2 + 175, 650, speed=-1, direction="to_up")
 pedestrians.append(
     pedestrian1
 )
 pedestrians.append(
     pedestrian2
 )
+# pedestrians.append(
+#     pedestrian3
+# )
 
 # Создаем объект для отслеживания времени
 clock = pygame.time.Clock()
@@ -42,7 +46,7 @@ clock = pygame.time.Clock()
 running = True
 while running:
     # Ограничиваем частоту обновления кадров
-    clock.tick(30)
+    clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -53,9 +57,8 @@ while running:
     if not paused:
         # отрисовка дороги
         screen.blit(background_image, (0, 0))
-        traffic_light_test.change_color("red", 5)
-        traffic_light_test.draw()
-        # Спавн и удаление машин
+
+        # Спавн машин
         current_time = pygame.time.get_ticks()
         if current_time >= next_circle_time:
             spawn_car(cars)
@@ -80,9 +83,13 @@ while running:
         for crossing in crossings:
             crossing.draw(screen)
 
-        # отрисовка светофора
-        traffic_light.update()
-        traffic_light.draw(screen)
+        # Светофор
+        # traffic_light.update()
+        # traffic_light.draw(screen)
+
+        # Умный светофор
+        smart_traffic_light.update(len(cars), len(pedestrians))
+        smart_traffic_light.draw(screen)
 
         for pedestrian in pedestrians:
             # Отрисовка пешехода

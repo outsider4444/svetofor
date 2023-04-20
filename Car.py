@@ -109,7 +109,7 @@ direction = "to_right"
 def spawn_car(cars):
     global id
     global direction, all_sprites
-    if len(cars) < 15:
+    if len(cars) < 70:
         if direction == "to_left":
             speed = -4
             y = (HEIGHT // 2) - 75
