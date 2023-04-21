@@ -9,14 +9,15 @@ from TrafficLight import TrafficLight
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # Светофор
-# traffic_light = TrafficLight(WIDTH // 2 + 50, (HEIGHT // 2) + 150, 25)
+# traffic_light = TrafficLight(WIDTH // 2, (HEIGHT // 2) + 125, 25)
+traffic_light_p = TrafficLight(WIDTH // 2 + 50, (HEIGHT // 2) + 150, 15)
 # Умный светофор
-smart_traffic_light = SmartTrafficLight((WIDTH // 2) + 50, (HEIGHT // 2) + 150, 3, 3)
+smart_traffic_light = SmartTrafficLight((WIDTH // 2) + 50, (HEIGHT // 2) + 150, 0, 0)
 traffic_light = smart_traffic_light
 
 # рисуем границы для перехода
-crossing1 = PedestrianCrossing((WIDTH / 2) - 220, (HEIGHT / 2)-20, 100, 240,2, 0)
-crossing2 = PedestrianCrossing((WIDTH / 2) + 119, (HEIGHT / 2)-20, 100, 240,2, 1)
+crossing1 = PedestrianCrossing((WIDTH / 2) - 220, (HEIGHT / 2)-20, 100, 240, 2, 0)
+crossing2 = PedestrianCrossing((WIDTH / 2) + 119, (HEIGHT / 2)-20, 100, 240, 2, 1)
 
 crossing3 = PedestrianCrossing(WIDTH / 2, (HEIGHT / 2) - 150, direction="horizontal")
 crossing4 = PedestrianCrossing(WIDTH / 2, (HEIGHT / 2) + 200, direction="horizontal")
@@ -48,3 +49,4 @@ cars_to_right, cars_to_left = [], []
 
 # Создание пешехода
 pedestrians = []
+all_sprites = pygame.sprite.Group()

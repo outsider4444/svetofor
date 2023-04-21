@@ -5,7 +5,7 @@ import pygame
 from constants import RED, BLACK, GREEN, HEIGHT, WIDTH, YELLOW
 from init import traffic_light, crossings, screen, cars, cars_to_right, cars_to_left
 
-all_sprites = pygame.sprite.Group()
+
 
 
 class Car(pygame.sprite.Sprite):
@@ -40,8 +40,7 @@ class Car(pygame.sprite.Sprite):
                 else:
                     self.check_car = False
 
-    def move(self, speed, cars):
-        global all_sprites
+    def move(self, speed, cars, all_sprites):
 
         self.speed = speed
         self.car_checker()
@@ -78,10 +77,10 @@ class Car(pygame.sprite.Sprite):
                     if self.x - self.radius < crossing.x + crossing.width and self.x >= crossing.x:
                         self.speed = speed
 
-        self.remove_if_off_screen(cars)
+        self.remove_if_off_screen(cars, all_sprites=all_sprites)
         self.x += self.speed
 
-    def remove_if_off_screen(self, cars):
+    def remove_if_off_screen(self, cars, all_sprites):
         if (self.direction == "to_left" and self.x + self.radius < 0) or (
                 self.direction == "to_right" and self.x - self.radius > WIDTH):
             for i in range(len(cars)):
@@ -98,7 +97,7 @@ class Car(pygame.sprite.Sprite):
         font = pygame.font.Font(None, 20)
         text_coor = font.render(f"{self.x + self.radius}, {self.y}", True, (0, 0, 0))  # Вывод координат в машинке
         text = font.render(f"{self.id}", True, (255, 255, 255))  # Вывод id машинки
-        screen.blit(text, (self.x - text.get_width() // 2, self.y - text.get_height() // 2))
+        # screen.blit(text, (self.x - text.get_width() // 2, self.y - text.get_height() // 2))
         # screen.blit(text_coor, (self.x - text.get_width() // 2, (self.y - text.get_height() // 2) - 35))
 
 
@@ -106,9 +105,9 @@ id = 0
 direction = "to_right"
 
 
-def spawn_car(cars):
+def spawn_car(cars, all_sprites):
     global id
-    global direction, all_sprites
+    global direction
     if len(cars) < 70:
         if direction == "to_left":
             speed = -4

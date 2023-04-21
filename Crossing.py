@@ -20,7 +20,7 @@ class PedestrianCrossing:
         # Задаем цвет квадрата и его прозрачность
         self.surface.fill((255, 255, 255, 128))
         # Рисуем красную границу квадрата
-        pygame.draw.rect(self.surface, (255, 0, 0), self.surface.get_rect(), self.border)
+        pygame.draw.rect(self.surface, (255, 0, 0, 255), self.surface.get_rect(), self.border)
 
     def draw(self, screen):
         # Отображаем квадрат на экране
@@ -29,10 +29,10 @@ class PedestrianCrossing:
         text_s = font.render(f"({self.x}, {self.y})", True, (255, 255, 255))
         text_id = font.render(f"{self.id}", True, (0, 0, 0))
         # Показ координат
-        screen.blit(text_s, ((self.x - text_s.get_width() // 2), (self.y - text_s.get_height() // 2) - 15))
-        screen.blit(texet_e, ((self.x - texet_e.get_width() // 2) + self.width, (self.y - texet_e.get_height() // 2) - 15))
-        screen.blit(text_id, ((self.x + text_s.get_width() // 2), (self.y + texet_e.get_height())))
-        screen.blit(self.surface, (self.x, self.y))
+        # screen.blit(text_s, ((self.x - text_s.get_width() // 2), (self.y - text_s.get_height() // 2) - 15))
+        # screen.blit(texet_e, ((self.x - texet_e.get_width() // 2) + self.width, (self.y - texet_e.get_height() // 2) - 15))
+        # screen.blit(text_id, ((self.x + text_s.get_width() // 2), (self.y + texet_e.get_height())))
+        # screen.blit(self.surface, (self.x, self.y))
 
     def return_x(self):
         return self.x

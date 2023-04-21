@@ -32,34 +32,37 @@ class SmartTrafficLight(pygame.sprite.Sprite):
             self.red_time = 3
         elif time.time() - self.last_color_change >= 1 and self.color == YELLOW and self.new_color == "red":
             self.color = GREEN
+            self.green_time = 0
             self.last_color_change = time.time()
             self.new_color = "green"
-            self.red_time = 3
         elif time.time() - self.last_color_change >= self.green_time and self.color == GREEN:
             self.color = YELLOW
             self.last_color_change = time.time()
         elif time.time() - self.last_color_change >= 1 and self.color == YELLOW and self.new_color == "green":
             self.color = RED
+            self.red_time = 0
             self.last_color_change = time.time()
             self.new_color = "red"
-        print(time.time() - self.last_color_change, self.green_time, self.red_time)
+        # print(time.time() - self.last_color_change, self.green_time, self.red_time)
 
     def adjust_times(self):
         # Определяем, насколько должен быть уменьшен или увеличен таймер для каждого цвета светофора
-        car_multiplier = (10 - self.cars) / 10 if self.cars <= 10 else 0
-        ped_multiplier = (5 - self.pedestrians) / 5 if self.pedestrians <= 5 else 0
-        red_adjustment = 3 * ped_multiplier
-        green_adjustment = 10 * car_multiplier
-        print(green_adjustment)
+        car_multiplier = (70 - self.cars) / 70 if self.cars <= 70 else 0
+        ped_multiplier = (18 - self.pedestrians) / 18 if self.pedestrians <= 18 else 0
+        red_adjustment = 5 * car_multiplier
+        green_adjustment = 10 * ped_multiplier
+
+        print(green_adjustment, red_adjustment)
 
         # Обновляем таймеры для каждого цвета светофора
-        self.red_time = max(2, red_adjustment)
-        self.green_time = max(2, green_adjustment)
+        self.red_time = max(4, self.red_time + (red_adjustment/1000))
+        self.green_time = max(6, self.green_time + (green_adjustment/1000))
 
     def update(self, cars, pedestrians):
         self.cars = cars
         self.pedestrians = pedestrians
         self.adjust_times()
+        print(time.time() - self.last_color_change, self.green_time, self.red_time)
         self.change_color()
 
     def draw(self, screen):
