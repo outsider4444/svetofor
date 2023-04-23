@@ -43,26 +43,22 @@ class SmartTrafficLight(pygame.sprite.Sprite):
             self.red_time = 0
             self.last_color_change = time.time()
             self.new_color = "red"
-        # print(time.time() - self.last_color_change, self.green_time, self.red_time)
 
     def adjust_times(self):
         # Определяем, насколько должен быть уменьшен или увеличен таймер для каждого цвета светофора
         car_multiplier = (70 - self.cars) / 70 if self.cars <= 70 else 0
-        ped_multiplier = (18 - self.pedestrians) / 18 if self.pedestrians <= 18 else 0
+        ped_multiplier = (12 - self.pedestrians) / 12 if self.pedestrians <= 12 else 0
         red_adjustment = 5 * car_multiplier
         green_adjustment = 10 * ped_multiplier
 
-        print(green_adjustment, red_adjustment)
-
         # Обновляем таймеры для каждого цвета светофора
-        self.red_time = max(4, self.red_time + (red_adjustment/1000))
-        self.green_time = max(6, self.green_time + (green_adjustment/1000))
+        self.red_time = max(3, self.red_time + (red_adjustment/1000))
+        self.green_time = max(5, self.green_time + (green_adjustment/1000))
 
     def update(self, cars, pedestrians):
         self.cars = cars
         self.pedestrians = pedestrians
         self.adjust_times()
-        print(time.time() - self.last_color_change, self.green_time, self.red_time)
         self.change_color()
 
     def draw(self, screen):

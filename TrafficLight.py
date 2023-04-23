@@ -20,7 +20,7 @@ class TrafficLight:
         self.green_time = green_time
 
         self.color = RED
-        self.next_change_time = pygame.time.get_ticks() + 3000  # Следующее изменение цвета через 3 секунд
+        self.next_change_time = pygame.time.get_ticks() + 5000  # Следующее изменение цвета через 3 секунд
         self.new_color = "red"
 
     def change_color(self,next_color=None, duration=None):
@@ -31,11 +31,11 @@ class TrafficLight:
             if self.new_color == "red":
                 self.color = GREEN
                 self.new_color = "green"
-                self.next_change_time = pygame.time.get_ticks() + 3000  # Держим зеленый на 2 секунд
+                self.next_change_time = pygame.time.get_ticks() + 4000  # Держим зеленый на 2 секунд
             else:
                 self.color = RED
                 self.new_color = "red"
-                self.next_change_time = pygame.time.get_ticks() + 6000  # Держим красный на 6 секунд
+                self.next_change_time = pygame.time.get_ticks() + 5000  # Держим красный на 6 секунд
         elif self.color == GREEN:
             self.color = YELLOW
             self.next_change_time = pygame.time.get_ticks() + 1200  # Держим желтый 1.2 секунды

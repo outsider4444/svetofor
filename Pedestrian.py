@@ -23,14 +23,14 @@ class Pedestrian(pygame.sprite.Sprite):
     def man_checker(self):
         if self.direction == "to_down":
             if self.y + self.size + 10 < HEIGHT and self.y > 0:
-                color = init.screen.get_at((int(self.x) + self.size // 2, self.y + (self.size + 10)))
+                color = init.screen.get_at((int(self.x) + self.size // 2, int(self.y) + (self.size + 10)))
                 if color == RED:
                     self.check_man = True
                 else:
                     self.check_man = False
         elif self.direction == "to_up":
             if self.y - 10 > 0 and self.y + self.size < HEIGHT:
-                color = init.screen.get_at((int(self.x) + self.size // 2, self.y - 10))
+                color = init.screen.get_at((int(self.x) + self.size // 2,  int(self.y) - 10))
                 if color == RED:
                     self.check_man = True
                 else:
@@ -50,7 +50,7 @@ class Pedestrian(pygame.sprite.Sprite):
                     # НЕ красный
                     if traffic_light.color != RED:
                         # Чуть выше чем верхняя граница перехода
-                        if (crossing.y - self.size) - 3 <= self.y <= crossing.y:
+                        if crossing.y - 5 <= self.y + self.size <= crossing.y:
                             self.speed = 0
                             self.check_crossing = False
                         if self.y > crossing.y + crossing.height:
@@ -106,7 +106,7 @@ id = 0
 
 def spawn_pedistrian(pedistrians, all_sprites):
     global direction, id
-    if len(pedistrians) < 18:
+    if len(pedistrians) < 12:
         if direction == "to_down":
             speed = 1
             y = 0

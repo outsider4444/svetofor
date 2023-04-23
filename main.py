@@ -4,7 +4,7 @@ import SmartTrafficLight
 from Pedestrian import Pedestrian, spawn_pedistrian
 from Car import spawn_car, Car
 from constants import WIDTH, HEIGHT, BLACK, GREEN, RED, YELLOW
-from init import screen, pedestrians, crossings, cars, smart_traffic_light, traffic_light, traffic_light_p, all_sprites
+from init import screen, pedestrians, crossings, cars, traffic_light, all_sprites
 from man_on_crossing import man_on_crossing
 
 pygame.init()
@@ -19,9 +19,11 @@ background_image = pygame.image.load("images/bg.png")
 
 # Создание машин и пешеходов
 delay = 1500  # 1.5 секунды
+delay_p = 2000  # 2 секунды
 
 # время, когда нужно создать следующую машину
 next_circle_time = pygame.time.get_ticks() + delay
+next_p_time = pygame.time.get_ticks() + delay_p
 
 # Создаем объект для отслеживания времени
 clock = pygame.time.Clock()
@@ -30,7 +32,7 @@ clock = pygame.time.Clock()
 running = True
 while running:
     # Ограничиваем частоту обновления кадров
-    clock.tick(60)
+    clock.tick(120)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -46,10 +48,12 @@ while running:
         current_time = pygame.time.get_ticks()
         if current_time >= next_circle_time:
             spawn_car(cars, all_sprites)
-            spawn_pedistrian(pedestrians, all_sprites)
             next_circle_time = current_time + delay
 
-        # todo Проверка чтобы люди не шли если машина на пешеходке
+        p_current_time = pygame.time.get_ticks()
+        if p_current_time >= next_p_time:
+            spawn_pedistrian(pedestrians, all_sprites)
+            next_p_time = p_current_time + delay_p
 
         # Человек переходит дорогу - машины пропускают
         man_on_crossing(cars, pedestrians, crossings)
@@ -70,14 +74,12 @@ while running:
             crossing.draw(screen)
 
         # Светофор
-        # traffic_light.update()
-        # traffic_light.draw(screen)
-
-        # traffic_light_p.update()
+        traffic_light.update()
 
         # Умный светофор
-        smart_traffic_light.update(len(cars), len(pedestrians))
-        smart_traffic_light.draw(screen)
+        # traffic_light.update(len(cars), len(pedestrians))
+
+        traffic_light.draw(screen)
 
         # Пешеходы
         for pedestrian in pedestrians:

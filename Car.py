@@ -6,8 +6,6 @@ from constants import RED, BLACK, GREEN, HEIGHT, WIDTH, YELLOW
 from init import traffic_light, crossings, screen, cars, cars_to_right, cars_to_left
 
 
-
-
 class Car(pygame.sprite.Sprite):
     def __init__(self, x, y, radius, speed, id, direction="to_right"):
         super().__init__()
@@ -41,10 +39,9 @@ class Car(pygame.sprite.Sprite):
                     self.check_car = False
 
     def move(self, speed, cars, all_sprites):
-
         self.speed = speed
         self.car_checker()
-        # На пешеходке человек или рядом машинка
+        # На переходе человек или рядом машинка
         if self.check_man or self.check_car:
             self.speed = 0
         else:
